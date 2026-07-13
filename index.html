@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Surprise</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;600&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #000;
+            height: 100vh; overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* --- THEMES --- */
+        .theme-day-1 { background: linear-gradient(120deg, #fbc2eb 0%, #a6c1ee 100%); color: #333; }
+        .theme-night-1 { background: linear-gradient(135deg, #141e30 0%, #243b55 100%); color: #fff; }
+        .theme-day-2 { background: linear-gradient(120deg, #ffecd2 0%, #fcb69f 100%); color: #333; }
+        .theme-night-2 { background: linear-gradient(135deg, #0f0c29 0%, #302b63 100%); color: #fff; }
+        .theme-day-3 { background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%); color: #333; }
+        .theme-night-finale { 
+            background: linear-gradient(135deg, #050505, #1a0b2e, #0d1321); 
+            background-size: 200% 200%;
+            animation: gradientBG 15s ease infinite; color: #fff; 
+        }
+
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* --- PAGE CONTAINER --- */
+        .page {
+            position: absolute; width: 100vw; height: 100vh; top: 0; left: 0;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            padding: 40px 20px; z-index: 10; opacity: 0; pointer-events: none; transition: opacity 1.2s ease-in-out;
+        }
+        .page.active { opacity: 1; pointer-events: auto; z-index: 20; }
+
+        /* --- CINEMATIC CHOREOGRAPHY --- */
+        .page h1, .page p, .page .page-img, .page .gallery-container, .page .corner-img {
+            opacity: 0; filter: blur(10px); transform: translateY(20px); transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .page .page-img { transform: scale(0.9) translateY(20px); }
+        .page .gallery-container { transform: scale(0.8); filter: blur(15px); }
+
+        .page.active h1 { opacity: 1; filter: blur(0); transform: translateY(0); transition-delay: 0.3s; }
+        .page.active p { opacity: 1; filter: blur(0); transform: translateY(0); transition-delay: 0.7s; }
+        .page.active .page-img { opacity: 1; filter: blur(0); transform: scale(1) translateY(0); transition-delay: 1.1s; }
+        .page.active .gallery-container { opacity: 1; filter: blur(0); transform: scale(1); transition-delay: 1s; }
+        /* Opacity set to 1 so corner images are 100% bright and clear! */
+        .page.active .corner-img { opacity: 1; filter: blur(0); transform: translateY(0); transition-delay: 1.3s; } 
+
+        /* --- TYPOGRAPHY --- */
+        h1 { font-family: 'Dancing Script', cursive; font-size: 4.5rem; margin-bottom: 20px; z-index: 5; letter-spacing: 2px; }
+        .page[class*="theme-day"] h1 { color: #ff4757; text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.8); }
+        .page[class*="theme-night"] h1 { color: #ffb8b8; text-shadow: 0 0 15px rgba(255, 107, 129, 0.8); }
+
+        p { font-size: 1.3rem; line-height: 1.6; margin-bottom: 40px; max-width: 600px; z-index: 5; }
+        .page[class*="theme-day"] p { font-weight: 600; text-shadow: 1px 1px 5px rgba(255,255,255,0.8); }
+        .page[class*="theme-night"] p { text-shadow: 0 4px 10px rgba(0,0,0,0.8); }
+
+        /* --- MAIN IMAGES --- */
+        .img-wrapper { animation: floatImg 5s ease-in-out infinite; animation-delay: 2s; z-index: 5; margin-bottom: 30px; }
+        .page-img { width: 250px; height: 250px; object-fit: cover; border-radius: 0 !important; border: 5px solid rgba(255,255,255,1); background: #333; cursor: pointer;}
+        .page[class*="theme-night"] .page-img { border-color: #ffb8b8; box-shadow: 0 0 30px rgba(255, 107, 129, 0.8); }
+        .page[class*="theme-day"] .page-img { box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+
+        @keyframes floatImg { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
+
+        /* --- CORNER IMAGES --- */
+        .corner-img {
+            position: absolute; width: 240px; height: 240px; object-fit: cover; border-radius: 0 !important; 
+            border: 4px solid rgba(255, 255, 255, 0.5); cursor: pointer; animation: floatCorner 6s ease-in-out infinite; z-index: 2; background: #333;
+        }
+        .page[class*="theme-night"] .corner-img { border-color: rgba(255, 184, 184, 0.4); box-shadow: 0 8px 30px rgba(0,0,0,0.8), 0 0 15px rgba(255, 107, 129, 0.2); }
+        .page[class*="theme-day"] .corner-img { box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+
+        @keyframes floatCorner { 0% { transform: translateY(0px) rotate(-3deg); } 50% { transform: translateY(-15px) rotate(3deg); } 100% { transform: translateY(0px) rotate(-3deg); } }
+
+        .pos-tl { top: calc(50% - 360px); left: calc(50% - 420px); animation-delay: 0s; }
+        .pos-tr { top: calc(50% - 360px); right: calc(50% - 420px); animation-delay: 1.5s; }
+        .pos-bl { bottom: calc(50% - 360px); left: calc(50% - 420px); animation-delay: 0.8s; }
+        .pos-br { bottom: calc(50% - 360px); right: calc(50% - 420px); animation-delay: 2s; }
+
+        #page7 .pos-tl { top: 3%; left: 3%; }
+        #page7 .pos-tr { top: 3%; right: 3%; }
+        #page7 .pos-bl { bottom: 3%; left: 3%; }
+        #page7 .pos-br { bottom: 3%; right: 3%; }
+
+        /* --- DECORATIONS & PARTICLES --- */
+        .deco { position: absolute; pointer-events: none; z-index: 1; }
+        .flower { font-size: 3rem; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)); animation: sway 8s ease-in-out infinite; }
+        .f1 { top: 15%; left: 20%; font-size: 4rem; animation-delay: 0s; }
+        .f2 { bottom: 20%; right: 20%; font-size: 3.5rem; animation-delay: 2s; }
+        .f3 { top: 50%; right: 10%; font-size: 5rem; animation-delay: 1s; }
+        
+        .moon {
+            width: 120px; height: 120px; background: #fff; border-radius: 50%; box-shadow: 0 0 50px #fff, 0 0 100px #fdfdcb;
+            top: 10%; right: 10%; animation: floatSlow 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes sway { 0% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(15deg); } 100% { transform: translateY(0) rotate(0deg); } }
+        @keyframes floatSlow { 0% { transform: translateY(0); } 100% { transform: translateY(20px); } }
+
+        .petal { position: absolute; background: #ffb8b8; border-radius: 15px 0 15px 0; opacity: 0.6; pointer-events: none; animation: falling linear infinite; }
+        .firefly { position: absolute; background: #fff; border-radius: 50%; box-shadow: 0 0 10px #fff, 0 0 20px #ffea00; opacity: 0; pointer-events: none; animation: floatFirefly ease-in-out infinite alternate; }
+
+        @keyframes falling { 0% { transform: translateY(-10vh) rotate(0deg) scale(1); opacity: 0; } 10% { opacity: 0.7; } 90% { opacity: 0.7; } 100% { transform: translateY(110vh) rotate(360deg) scale(0.8); opacity: 0; } }
+        @keyframes floatFirefly { 0% { transform: translate(0, 0) scale(0.8); opacity: 0.2; } 50% { opacity: 0.8; } 100% { transform: translate(30px, -40px) scale(1.2); opacity: 0.2; } }
+
+        /* --- THE BACK BUTTON --- */
+        #backBtn {
+            position: fixed; bottom: 30px; left: 30px;
+            background: linear-gradient(45deg, #ff6b81, #ff4757); color: white; border: none;
+            padding: 12px 30px; font-size: 1.1rem; font-family: 'Poppins', sans-serif; font-weight: 600;
+            border-radius: 50px; cursor: pointer; box-shadow: 0 10px 25px rgba(255, 107, 129, 0.5);
+            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; z-index: 100;
+            display: none; /* hidden on first page */
+        }
+        #backBtn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 15px 35px rgba(255, 107, 129, 0.8); }
+
+        /* --- FULLSCREEN IMAGE VIEWER --- */
+        #fsOverlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.95); z-index: 9999; display: flex;
+            justify-content: center; align-items: center; opacity: 0;
+            pointer-events: none; transition: opacity 0.4s ease; cursor: pointer;
+        }
+        #fsOverlay.active { opacity: 1; pointer-events: auto; }
+        #fsImage {
+            max-width: 90%; max-height: 90%; object-fit: contain;
+            border-radius: 0 !important; /* Kept sharp as a square */
+            border: 5px solid #ffb8b8; box-shadow: 0 0 50px rgba(255, 107, 129, 0.8);
+            transform: scale(0.8); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        #fsOverlay.active #fsImage { transform: scale(1); }
+
+        /* --- PAGE 7: GALLERY --- */
+        .gallery-container { position: relative; width: 600px; height: 600px; margin: 20px auto; display: flex; justify-content: center; align-items: center; z-index: 5; }
+        .center-img { width: 220px; height: 220px; object-fit: cover; border-radius: 0 !important; border: 5px solid #ffb8b8; box-shadow: 0 0 40px rgba(255, 107, 129, 0.8); z-index: 10; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease; background: #333; cursor: pointer;}
+        .orbit-track { position: absolute; width: 100%; height: 100%; animation: spin 35s linear infinite; }
+        .orbit-img { position: absolute; width: 130px; height: 130px; object-fit: cover; border-radius: 0 !important; border: 4px solid #ffb8b8; box-shadow: 0 0 20px rgba(255, 107, 129, 0.6); cursor: pointer; transition: transform 0.3s ease, opacity 0.3s ease; animation: counter-spin 35s linear infinite; background: #333;}
+        .orbit-img:hover { transform: scale(1.15); border-color: #ffffff; box-shadow: 0 0 35px rgba(255, 107, 129, 1); z-index: 20; }
+
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes counter-spin { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+    </style>
+</head>
+<body>
+<audio id="bgMusic" loop>
+    <source src="music.mpeg" type="audio/mpeg">
+</audio>
+    <div class="page theme-day-1 active" id="page1">
+        <div class="deco flower f1">🌸</div>
+        <div class="deco flower f2">🌸</div>
+        
+        <img class="corner-img pos-tl">
+        <img class="corner-img pos-tr">
+        <img class="corner-img pos-bl">
+        <img class="corner-img pos-br">
+
+        <h1>Hay Cutie</h1>
+        <p>I Think This Surprice is Enough To Make Your Day Special..</p>
+        <p>Just Wait And Watch....🥰🥰</p>
+    </div>
+
+    <div class="page theme-night-1" id="page2">
+        <div class="deco moon"></div>
+
+        <img class="corner-img pos-tl">
+        <img class="corner-img pos-tr">
+        <img class="corner-img pos-bl">
+        <img class="corner-img pos-br">
+
+        <h1>Your Smile</h1>
+        <div class="img-wrapper"><img class="page-img" alt="Memory"></div>
+        <p>You Look Very Beautifull While You Smail 😍😍😍 So Please Keep Your Smile At Your Beautiful Face......😍😘🥰</p>
+    </div>
+
+    <div class="page theme-day-2" id="page3">
+        <div class="deco flower f1">🌻</div>
+        <div class="deco flower f3">🌻</div>
+
+        <img class="corner-img pos-tl">
+        <img class="corner-img pos-tr">
+        <img class="corner-img pos-bl">
+        <img class="corner-img pos-br">
+
+        <h1>Garba</h1>
+        <div class="img-wrapper"><img class="page-img" alt="Memory"></div>
+        <p>You Look Like An Goddess While You Weare Garba Dress ........</p>
+    </div>
+
+    <div class="page theme-night-2" id="page4">
+        <img class="corner-img pos-tl">
+        <img class="corner-img pos-tr">
+        <img class="corner-img pos-bl">
+        <img class="corner-img pos-br">
+
+        <h1>..Your Kindness..</h1>
+        <div class="img-wrapper"><img class="page-img" alt="Memory"></div>
+        <p>You Have The Most Beautiful And Caring Heart.</p>
+    </div>
+
+    <div class="page theme-day-3" id="page5">
+        <div class="deco flower f2">🌷</div>
+        <div class="deco flower f1">🌼</div>
+
+        <img class="corner-img pos-tl">
+        <img class="corner-img pos-tr">
+        <img class="corner-img pos-bl">
+        <img class="corner-img pos-br">
+
+        <h1>Best Memory</h1>
+        <div class="img-wrapper"><img class="page-img" alt="Memory"></div>
+        <p>There Are Some Best Memorys In Your Life 🤩🤩 Who Steal My Heart..💘💘💘💘💘💘 </p>
+    </div>
+
+    <div class="page theme-night-1" id="page6">
+        <div class="deco moon" style="width: 80px; height: 80px; left: 15%; top: 20%;"></div>
+
+        <img class="corner-img pos-tl">
+        <img class="corner-img pos-tr">
+        <img class="corner-img pos-bl">
+        <img class="corner-img pos-br">
+
+        <h1>Only You</h1>
+        <div class="img-wrapper"><img class="page-img" alt="Memory"></div>
+        <p>You Are The Best Person In Every One's Life 😜😜 Where You Come..........</p>
+    </div>
+
+    <div class="page theme-night-finale" id="page7">
+        <img class="corner-img pos-tl">
+        <img class="corner-img pos-tr">
+        <img class="corner-img pos-bl">
+        <img class="corner-img pos-br">
+
+        <h1>Best Views</h1>
+        <p>I Wish You Like This</p>
+        
+        <div class="gallery-container">
+            <img class="center-img" id="centerImage">
+            <div class="orbit-track" id="orbitTrack">
+                </div>
+        </div>
+    </div>
+
+    <button id="backBtn" onclick="prevPage()">&#8592; Back</button>
+
+    <div id="fsOverlay" onclick="closeFS()">
+        <img id="fsImage" src="">
+    </div>
+
+    <script>
+        // =========================================================================
+        // 📸 YOUR CENTRAL PHOTO CONFIGURATION AREA
+        // =========================================================================
+        const MY_PHOTOS = {
+            mainImages: [
+                "01.jpeg", "10.jpeg", "19.jpeg", "15.jpeg", "22.jpeg"  
+            ],
+            galleryCenter: "23.jpeg",
+            galleryOrbit: [
+                "23.jpeg", "24.jpeg", "22.jpeg", "01.jpeg", 
+                "02.jpeg", "08.jpeg", "10.jpeg", "11.jpeg"
+            ],
+            cornerImages: [
+                "23.jpeg", "24.jpeg", "25.jpeg", "13.jpeg",
+                "02.jpeg", "03.jpeg", "04.jpeg", "18.jpeg",
+                "05.jpeg", "06.jpeg", "07.jpeg", "08.jpeg",
+                "16.jpeg", "17.jpeg", "18.jpeg", "20.jpeg",
+                "01.jpeg", "03.jpeg", "08.jpeg", "04.jpeg",
+                "11.jpeg", "12.jpeg", "21.jpeg", "25.jpeg",
+                "24.jpeg", "02.jpeg", "15.jpeg", "22.jpeg"
+            ]
+        };
+        // =========================================================================
+
+        let currentPage = 1;
+        const totalPages = 7;
+        let slideTimer;
+        let isPaused = false;
+
+        // --- APPLY PHOTOS ---
+        document.querySelectorAll('.page-img').forEach((img, i) => { img.src = MY_PHOTOS.mainImages[i % MY_PHOTOS.mainImages.length]; });
+        document.querySelectorAll('.corner-img').forEach((img, i) => { img.src = MY_PHOTOS.cornerImages[i % MY_PHOTOS.cornerImages.length]; });
+        document.getElementById('centerImage').src = MY_PHOTOS.galleryCenter;
+
+        // --- TIMER & NAVIGATION LOGIC ---
+        function startAutoAdvance() {
+            clearTimeout(slideTimer);
+            if (currentPage < totalPages && !isPaused) {
+                // Auto advance every 5 seconds
+                slideTimer = setTimeout(() => {
+                    nextPage();
+                }, 5000);
+            }
+        }
+
+        function pauseTimer() {
+            isPaused = true;
+            clearTimeout(slideTimer);
+        }
+
+        function resumeTimer() {
+            isPaused = false;
+            startAutoAdvance();
+        }
+
+        function nextPage() {
+            if(currentPage < totalPages) {
+                document.getElementById('page' + currentPage).classList.remove('active');
+                currentPage++;
+                document.getElementById('page' + currentPage).classList.add('active');
+                updateUI();
+                startAutoAdvance();
+            }
+        }
+
+        function prevPage() {
+            if(currentPage > 1) {
+                document.getElementById('page' + currentPage).classList.remove('active');
+                currentPage--;
+                document.getElementById('page' + currentPage).classList.add('active');
+                updateUI();
+                startAutoAdvance(); // Reset timer when manually navigating
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('backBtn').style.display = (currentPage === 1) ? 'none' : 'block';
+        }
+
+        // --- FULLSCREEN VIEWER LOGIC ---
+        function openFS(src) {
+            pauseTimer();
+            document.getElementById('fsImage').src = src;
+            document.getElementById('fsOverlay').classList.add('active');
+        }
+
+        function closeFS() {
+            document.getElementById('fsOverlay').classList.remove('active');
+            resumeTimer();
+        }
+
+        // Apply click event to all regular images
+        document.querySelectorAll('img').forEach(img => {
+            if (!img.classList.contains('orbit-img') && img.id !== 'fsImage') {
+                img.onclick = function(e) {
+                    e.stopPropagation();
+                    openFS(this.src);
+                };
+            }
+        });
+
+        // --- GENERATE ROMANTIC PARTICLES ---
+        function createParticles() {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => {
+                const isDay = page.className.includes('theme-day');
+                const particleCount = isDay ? 20 : 30;
+
+                for(let i = 0; i < particleCount; i++) {
+                    let particle = document.createElement('div');
+                    if (isDay) {
+                        particle.classList.add('petal');
+                        particle.style.width = Math.random() * 10 + 10 + 'px';
+                        particle.style.height = particle.style.width;
+                        particle.style.left = Math.random() * 100 + 'vw';
+                        particle.style.animationDuration = Math.random() * 5 + 5 + 's';
+                        particle.style.animationDelay = Math.random() * 5 + 's';
+                    } else {
+                        particle.classList.add('firefly');
+                        particle.style.width = Math.random() * 4 + 2 + 'px';
+                        particle.style.height = particle.style.width;
+                        particle.style.left = Math.random() * 100 + 'vw';
+                        particle.style.top = Math.random() * 100 + 'vh';
+                        particle.style.animationDuration = Math.random() * 3 + 2 + 's';
+                        particle.style.animationDelay = Math.random() * 2 + 's';
+                    }
+                    page.appendChild(particle);
+                }
+            });
+        }
+
+        // --- BUILD GALLERY (PAGE 7) ---
+        const orbitTrack = document.getElementById('orbitTrack');
+        const centerImgEl = document.getElementById('centerImage');
+        const numImages = MY_PHOTOS.galleryOrbit.length;
+        const radius = 260; 
+
+        MY_PHOTOS.galleryOrbit.forEach((src, index) => {
+            let img = document.createElement('img');
+            img.src = src;
+            img.classList.add('orbit-img');
+
+            let angle = (index / numImages) * (2 * Math.PI);
+            let x = 300 + radius * Math.cos(angle) - 65; 
+            let y = 300 + radius * Math.sin(angle) - 65;
+
+            img.style.left = `${x}px`;
+            img.style.top = `${y}px`;
+
+            img.onclick = function(e) {
+                e.stopPropagation();
+                
+                // Pause timer and open full screen viewer
+                openFS(this.src);
+
+                // Run the background swap animation so when they close the fullscreen, 
+                // the image they clicked is now beautifully in the center.
+                let container = document.querySelector('.gallery-container');
+                let containerRect = container.getBoundingClientRect();
+                let imgRect = img.getBoundingClientRect(); 
+
+                let startX = imgRect.left - containerRect.left;
+                let startY = imgRect.top - containerRect.top;
+
+                let clone = document.createElement('img');
+                clone.src = img.src;
+                clone.style.position = 'absolute';
+                clone.style.width = imgRect.width + 'px';
+                clone.style.height = imgRect.height + 'px';
+                clone.style.left = startX + 'px';
+                clone.style.top = startY + 'px';
+                clone.style.objectFit = 'cover';
+                clone.style.borderRadius = '0'; 
+                clone.style.border = '4px solid #ffb8b8';
+                clone.style.boxShadow = '0 0 35px rgba(255, 107, 129, 1)';
+                clone.style.zIndex = '50';
+                clone.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)'; 
+                
+                container.appendChild(clone);
+
+                img.style.opacity = '0';
+                centerImgEl.style.transform = 'scale(0.3)';
+                centerImgEl.style.opacity = '0';
+
+                setTimeout(() => {
+                    clone.style.left = '190px';
+                    clone.style.top = '190px';
+                    clone.style.width = '220px';
+                    clone.style.height = '220px';
+                    clone.style.borderRadius = '0'; 
+                    clone.style.border = '5px solid #ffb8b8';
+                }, 20);
+
+                setTimeout(() => {
+                    let tempSrc = centerImgEl.src;
+                    centerImgEl.src = img.src;
+                    img.src = tempSrc;
+
+                    centerImgEl.style.transform = 'scale(1)';
+                    centerImgEl.style.opacity = '1';
+                    img.style.opacity = '1';
+                    clone.remove();
+                }, 650);
+            };
+            orbitTrack.appendChild(img);
+        });
+
+        // Initialize Everything
+        window.onload = () => {
+            createParticles();
+            startAutoAdvance(); 
+        };
+        // Function to start music
+function startMusic() {
+    const audio = document.getElementById('bgMusic');
+    audio.play().then(() => {
+        // Music started successfully
+        // Remove the listener once it starts so it doesn't trigger again
+        document.removeEventListener('click', startMusic);
+    }).catch(error => {
+        console.log("Autoplay prevented by browser, waiting for user interaction.");
+    });
+}
+
+// Add the listener to the whole document
+document.addEventListener('click', startMusic);
+    </script>
+</body>
+</html>
